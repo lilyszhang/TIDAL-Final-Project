@@ -23,5 +23,5 @@ function draw() {
 5. Depending on the given topcode, perfom a certain action (draw to screen, erase, change color)
   * Draw to screen - Draw an ellipse at the x and y position of the topcode, change the brush size depending on the topcode rotation
   * Erase - Draw over the entire canvas with a slightly transparent white
-  * Change color - Use a HSVtoRGB function to transform the HSB values {topcode.x, 1, 1} to it's corresponding RBG value
+  * Change color - Use a HSVtoRGB function to transform the HSB values {topcode.y, 1, 1} to it's corresponding {r, g, b} object and set that as the brush color
 6. Update element positioning using a `style.css` file to get the desired layout
