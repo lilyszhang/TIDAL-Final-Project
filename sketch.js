@@ -44,7 +44,7 @@ var topcodes = [];
 var c = {}
 
 function setup(){
-    canvas = createCanvas(600, 400);
+    canvas = createCanvas(1280, 600);
     canvas.class("lemon");
     c = {
         r: 0,
@@ -61,7 +61,7 @@ function draw() {
     }
     for(var i=0; i<topcodes.length; i++){
         if(topcodes[i].code == 327){
-            ellipse(topcodes[i].x, topcodes[i].y, topcodes[i].angle*100/6.3, topcodes[i].angle*100/6.3);
+            ellipse((topcodes[i].x/852)*width, (topcodes[i].y/400)*height, topcodes[i].angle*50/6.3, topcodes[i].angle*50/6.3);
         } else if(topcodes[i].code == 31) {
             background(255, 100);
         } else if (topcodes[i].code == 93){

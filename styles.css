@@ -11,4 +11,5 @@
 
 #video-canvas {
     float: left;
+    display: none;
 }
