@@ -1,0 +1,14 @@
+/* Stylesheet */
+
+#camera-button {
+    position: absolute;
+    bottom: 10px;
+}
+
+.lemon {
+    float: right;
+}
+
+#video-canvas {
+    float: left;
+}
