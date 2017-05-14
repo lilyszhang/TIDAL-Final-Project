@@ -2,7 +2,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     var json = JSON.parse(jsonString);
     topcodes = json.topcodes;
 
-    var ctx = document.querySelector("#waves").getContext('2d');
+    var ctx = document.querySelector("#lines").getContext('2d');
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = "black";
 
@@ -24,11 +24,11 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
 var topcodes = [];
 var c = {}
-var canvasHeight = 400;
-var canvasWidth = 600;
+var canvasHeight = 600;
+var canvasWidth = 1200;
 
 
-/*var waves = new SineWaves({
+var waves = new SineWaves({
   // Canvas Element
   el: document.getElementById('waves'),
 
@@ -83,8 +83,7 @@ var canvasWidth = 600;
       this.waves[index].strokeStyle = gradient;
     }
   }
-});*/
-
+});
 
 
 
