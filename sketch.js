@@ -1,72 +1,90 @@
 TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
-  var json = JSON.parse(jsonString);
-  topcodes = json.topcodes;
+    var json = JSON.parse(jsonString);
+    topcodes = json.topcodes;
+
+    var ctx = document.querySelector("#waves").getContext('2d');
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.fillStyle = "black";
+
+
+    for (i=0; i < topcodes.length; i++) {
+        if(topcodes[i].code == 93 || topcodes[i].code == 79){
+            console.log('found 93');
+            console.log(topcodes[i].code);
+            ctx.beginPath();
+            ctx.moveTo(topcodes[i].x, 0);
+            ctx.lineTo(topcodes[i].x, canvasHeight);
+            ctx.stroke();
+        }
+    }
+    ctx.closePath();
+
 });
-
-
-function drawCodes(topcodes) {
-  var ctx = document.querySelector("#video-canvas").getContext('2d');
-  ctx.fillStyle = "rgba(" + c.r + ", " + c.g + ", " + c.b + ", 0.8)";
-  for (i=0; i<topcodes.length; i++) {
-    ctx.beginPath();
-    ctx.arc(topcodes[i].x, topcodes[i].y, topcodes[i].radius, 0, Math.PI*2, true);
-    ctx.fill();
-  }
-}
-
-function HSVtoRGB(h, s, v) {
-    var r, g, b, i, f, p, q, t;
-    if (arguments.length === 1) {
-        s = h.s, v = h.v, h = h.h;
-    }
-    i = Math.floor(h * 6);
-    f = h * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
-    switch (i % 6) {
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        case 5: r = v, g = p, b = q; break;
-    }
-    return {
-        r: Math.round(r * 255),
-        g: Math.round(g * 255),
-        b: Math.round(b * 255)
-    };
-}
 
 
 var topcodes = [];
 var c = {}
+var canvasHeight = 400;
+var canvasWidth = 600;
 
-function setup(){
-    canvas = createCanvas(600, 400);
-    canvas.class("lemon");
-    c = {
-        r: 0,
-        g: 0,
-        b: 0
-    }
-    fill(c.r, c.g, c.b);
-}
 
-function draw() {
-    if(c != null){
-        noStroke();
-        fill(c.r, c.g, c.b);
+/*var waves = new SineWaves({
+  // Canvas Element
+  el: document.getElementById('waves'),
+
+  // General speed of entire wave system
+  speed: 8,
+
+  // How many degress should we rotate all of the waves
+  rotate: 0,
+
+  // Ease function from left to right
+  ease: 'Linear',
+
+  // Specific how much the width of the canvas the waves should be
+  // This can either be a number or a percent
+  waveWidth: '95%',
+
+  // An array of wave options
+  waves: [
+    {
+      timeModifier: 1,   // This is multiplied against `speed`
+      lineWidth: 3,      // Stroke width
+      amplitude: 150,    // How tall is the wave
+      wavelength: 200,   // How long is the wave
+      segmentLength: 20, // How smooth should the line be
+      strokeStyle: 'rgba(255, 255, 255, 0.5)', // Stroke color and opacity
+      type: 'sine'       // Wave type
+    },
+    {
+      timeModifier: 1,
+      lineWidth: 2,
+      amplitude: 150,
+      wavelength: 100,
+      strokeStyle: 'rgba(255, 255, 255, 0.3)'
     }
-    for(var i=0; i<topcodes.length; i++){
-        if(topcodes[i].code == 327){
-            ellipse(topcodes[i].x, topcodes[i].y, topcodes[i].angle*100/6.3, topcodes[i].angle*100/6.3);
-        } else if(topcodes[i].code == 31) {
-            background(255, 100);
-        } else if (topcodes[i].code == 93){
-            var hue = (topcodes[i].y/400);
-            c = HSVtoRGB(hue, 1, 1)
-        }
+  ],
+
+  // Perform any additional initializations here
+  initialize: function (){},
+
+  // This function is called whenver the window is resized
+  resizeEvent: function() {
+
+    // Here is an example on how to create a gradient stroke
+    var gradient = this.ctx.createLinearGradient(0, 0, this.width, 0);
+    gradient.addColorStop(0,"rgba(0, 0, 0, 0)");
+    gradient.addColorStop(0.5,"rgba(255, 255, 255, 0.5)");
+    gradient.addColorStop(1,"rgba(0, 0, 0, 0)");
+
+    var index = -1;
+    var length = this.waves.length;
+      while(++index < length){
+      this.waves[index].strokeStyle = gradient;
     }
-}
+  }
+});*/
+
+
+
+
