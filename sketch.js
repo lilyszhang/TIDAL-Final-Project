@@ -6,84 +6,82 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = "black";
 
-
+    var i;
+    var sineWave = [];
     for (i=0; i < topcodes.length; i++) {
-        if(topcodes[i].code == 93 || topcodes[i].code == 79){
-            console.log('found 93');
-            console.log(topcodes[i].code);
-            ctx.beginPath();
-            ctx.moveTo(topcodes[i].x, 0);
-            ctx.lineTo(topcodes[i].x, canvasHeight);
-            ctx.stroke();
+        if(topcodes[i].code == 93) {
+          sineWave.push({
+            x:topcodes[i].x,
+            frequency: 5 //Higher frequency (default is 10)
+          }); 
+          ctx.beginPath();
+          ctx.moveTo(topcodes[i].x, 0);
+          ctx.lineTo(topcodes[i].x, canvasHeight);
+          ctx.stroke();
+          ctx.closePath();
+        } else if (topcodes[i].code == 155) {
+          sineWave.push({
+            x:topcodes[i].x,
+            frequency: 20 //Lower frequency (default is 10)
+          });
+          ctx.beginPath();
+          ctx.moveTo(topcodes[i].x, 0);
+          ctx.lineTo(topcodes[i].x, canvasHeight);
+          ctx.stroke();
+          ctx.closePath();
         }
+    }
+    
+
+
+    //Draw sineWave waves
+    sineWave.sort(function(a,b){
+      return a.x - b.x;
+    });
+
+    console.log(sineWave);
+
+    //Draw first part of the wave
+    var firstSection = (sineWave[0]) ? sineWave[0].x : canvasWidth;
+
+    var counter = 0, x=0,y=180;
+    var increase = 90/180*Math.PI / 9;
+    ctx.beginPath();
+    for(i = 0; i <= firstSection; i += 10){
+        ctx.moveTo(x,y);
+        x = i;
+        y =  180 - Math.sin(counter) * 120;
+        counter += increase; 
+        ctx.lineTo(x,y);
+        ctx.stroke();
     }
     ctx.closePath();
 
+
+    //If more sections exist
+    for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
+      nextSectionX = ((sectionIndex + 1) < sineWave.length) ? 
+        sineWave[sectionIndex + 1].x : canvasWidth;
+      var counter = 0, x=sineWave[sectionIndex].x,y=180;
+      var increase = 90/180*Math.PI / 9;
+      ctx.beginPath();
+      for(i = sineWave[sectionIndex].x; i <= nextSectionX; i += sineWave[sectionIndex].frequency){
+          ctx.moveTo(x,y);
+          x = i;
+          y =  180 - Math.sin(counter) * 120;
+          counter += increase; 
+          ctx.lineTo(x,y);
+          ctx.stroke();
+      }
+      ctx.closePath();
+    }
 });
 
 
 var topcodes = [];
 var c = {}
-var canvasHeight = 600;
-var canvasWidth = 1200;
-
-
-var waves = new SineWaves({
-  // Canvas Element
-  el: document.getElementById('waves'),
-
-  // General speed of entire wave system
-  speed: 8,
-
-  // How many degress should we rotate all of the waves
-  rotate: 0,
-
-  // Ease function from left to right
-  ease: 'Linear',
-
-  // Specific how much the width of the canvas the waves should be
-  // This can either be a number or a percent
-  waveWidth: '95%',
-
-  // An array of wave options
-  waves: [
-    {
-      timeModifier: 1,   // This is multiplied against `speed`
-      lineWidth: 3,      // Stroke width
-      amplitude: 150,    // How tall is the wave
-      wavelength: 200,   // How long is the wave
-      segmentLength: 20, // How smooth should the line be
-      strokeStyle: 'rgba(255, 255, 255, 0.5)', // Stroke color and opacity
-      type: 'sine'       // Wave type
-    },
-    {
-      timeModifier: 1,
-      lineWidth: 2,
-      amplitude: 150,
-      wavelength: 100,
-      strokeStyle: 'rgba(255, 255, 255, 0.3)'
-    }
-  ],
-
-  // Perform any additional initializations here
-  initialize: function (){},
-
-  // This function is called whenver the window is resized
-  resizeEvent: function() {
-
-    // Here is an example on how to create a gradient stroke
-    var gradient = this.ctx.createLinearGradient(0, 0, this.width, 0);
-    gradient.addColorStop(0,"rgba(0, 0, 0, 0)");
-    gradient.addColorStop(0.5,"rgba(255, 255, 255, 0.5)");
-    gradient.addColorStop(1,"rgba(0, 0, 0, 0)");
-
-    var index = -1;
-    var length = this.waves.length;
-      while(++index < length){
-      this.waves[index].strokeStyle = gradient;
-    }
-  }
-});
+var canvasWidth = 600;
+var canvasHeight = 400;
 
 
 
