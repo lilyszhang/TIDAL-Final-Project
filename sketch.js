@@ -37,7 +37,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           sineWave.push({
             x: newX,
             frequencyMultiplier: Math.round((topcodes[i].angle * (6/(2*Math.PI)) - 3))  //Wavelength
-          }); 
+          });
           ctx.beginPath();
           ctx.moveTo(newX, 0);
           ctx.lineTo(newX, canvasHeight);
@@ -66,7 +66,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     var currentFrequency = 2;
     //Draw first part of the wave
     var firstSection = (sineWave[0]) ? sineWave[0].x : canvasWidth;
-    var yIntercept = 300;
+    var yIntercept = 550;
 
     var counter = 0, x=0,y = yIntercept;
     var increase = 90/180*Math.PI / 9;
@@ -107,7 +107,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       transformedMultiplier = (transformedMultiplier == 0) ? 1 : transformedMultiplier;
       console.log('fixed to: ' + transformedMultiplier);
       console.log('to the power of 2: ' + Math.pow(2, transformedMultiplier));
-      
+
 
       //Set the current Frequency
       currentFrequency *= Math.pow(2, transformedMultiplier);
