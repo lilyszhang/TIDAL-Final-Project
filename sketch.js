@@ -16,6 +16,16 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       0.25: 'gamma ray'
     };
 
+    var sun = {
+      16: 'images/radio.png',
+      8: 'images/radio.png',
+      4: 'images/infrared.png',
+      2: 'images/visible.png',
+      1: 'images/UV.png',
+      0.5: 'images/xray.png',
+      0.25: 'images/gamma.png'
+    }
+
     var i;
     var sineWave = [];
     //Put topcodes in system
@@ -24,7 +34,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           sineWave.push({
             x:topcodes[i].x,
             frequencyMultiplier: 0.5 //Higher frequency (default is 10)
-          }); 
+          });
           ctx.beginPath();
           ctx.moveTo(topcodes[i].x, 0);
           ctx.lineTo(topcodes[i].x, canvasHeight);
@@ -42,7 +52,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           ctx.closePath();
         }
     }
-    
+
     //Draw sineWave waves
     sineWave.sort(function(a,b){
       return a.x - b.x;
@@ -60,7 +70,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         ctx.moveTo(x,y);
         x = i;
         y = yIntercept - Math.sin(counter) * 60;
-        counter += increase; 
+        counter += increase;
         ctx.lineTo(x,y);
         ctx.stroke();
     }
@@ -74,7 +84,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     //If more sections exist
     for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
-      nextSectionX = ((sectionIndex + 1) < sineWave.length) ? 
+      nextSectionX = ((sectionIndex + 1) < sineWave.length) ?
         sineWave[sectionIndex + 1].x : canvasWidth;
       var counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
       currentFrequency *= sineWave[sectionIndex].frequencyMultiplier;
@@ -84,7 +94,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           ctx.moveTo(x,y);
           x = i;
           y = yIntercept - Math.sin(counter) * 60;
-          counter += increase; 
+          counter += increase;
           ctx.lineTo(x,y);
           ctx.stroke();
       }
@@ -98,6 +108,3 @@ var topcodes = [];
 var c = {}
 var canvasWidth = 600;
 var canvasHeight = 400;
-
-
-
