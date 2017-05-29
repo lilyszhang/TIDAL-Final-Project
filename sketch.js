@@ -3,7 +3,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     topcodes = json.topcodes;
 
     var ctx = document.querySelector("#lines").getContext('2d');
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, 1420, canvasHeight);
     ctx.fillStyle = "black";
 
     var light = {
@@ -18,26 +18,31 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     var i;
     var sineWave = [];
+    var newX = 0;
     //Put topcodes in system
     for (i=0; i < topcodes.length; i++) {
-        if(topcodes[i].code == 93) {
+        if(topcodes[i].code == 397) { //Wavelength
+          //console.log(topcodes[i].angle);
+          newX = topcodes[i].x * xRefactor;
           sineWave.push({
-            x:topcodes[i].x,
-            frequencyMultiplier: 0.5 //Higher frequency (default is 10)
+            x: newX,
+            frequencyMultiplier: Math.round((topcodes[i].angle * (6/(2*Math.PI)) - 3))  //Wavelength
           }); 
           ctx.beginPath();
-          ctx.moveTo(topcodes[i].x, 0);
-          ctx.lineTo(topcodes[i].x, canvasHeight);
+          ctx.moveTo(newX, 0);
+          ctx.lineTo(newX, canvasHeight);
           ctx.stroke();
           ctx.closePath();
-        } else if (topcodes[i].code == 155) {
+        } else if (topcodes[i].code == 391) {
+          console.log(topcodes[i].angle);
+          newX = topcodes[i].x * xRefactor;
           sineWave.push({
-            x:topcodes[i].x,
-            frequencyMultiplier: 2 //Lower frequency (default is 10)
+            x:newX,
+            frequencyMultiplier: -1 * Math.round((topcodes[i].angle * (6/(2*Math.PI)) - 3))  //Frequency
           });
           ctx.beginPath();
-          ctx.moveTo(topcodes[i].x, 0);
-          ctx.lineTo(topcodes[i].x, canvasHeight);
+          ctx.moveTo(newX, 0);
+          ctx.lineTo(newX, canvasHeight);
           ctx.stroke();
           ctx.closePath();
         }
@@ -69,16 +74,37 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     //Write the text
     ctx.font="20px Georgia";
     ctx.textAlign="center";
-    ctx.fillText(light[currentFrequency],firstSection/2,100);
+    ctx.fillText(light[currentFrequency],firstSection/2,50);
 
+    if(sineWave.length > 0){
+      console.log(sineWave);
+    }
 
     //If more sections exist
     for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
       nextSectionX = ((sectionIndex + 1) < sineWave.length) ? 
         sineWave[sectionIndex + 1].x : canvasWidth;
       var counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
-      currentFrequency *= sineWave[sectionIndex].frequencyMultiplier;
-      console.log(currentFrequency);
+
+      //Transforming the multiplier
+      var transformedMultiplier = sineWave[sectionIndex].frequencyMultiplier;
+      console.log('before transformation:' + transformedMultiplier)
+      //Greater than 3 then set to 3
+      transformedMultiplier = (transformedMultiplier > 3) ? 3 : transformedMultiplier;
+      //Greater than -3 then set to -3
+      transformedMultiplier = (transformedMultiplier < -3) ? -3 : transformedMultiplier;
+      //Equal to 0 than bump to 1
+      transformedMultiplier = (transformedMultiplier == 0) ? 1 : transformedMultiplier;
+      console.log('fixed to: ' + transformedMultiplier);
+      console.log('to the power of 2: ' + Math.pow(2, transformedMultiplier));
+      
+
+      //Set the current Frequency
+      currentFrequency *= Math.pow(2, transformedMultiplier);
+      currentFrequency = (currentFrequency > 16) ? 16: currentFrequency;
+      currentFrequency = (currentFrequency < 0.25) ? 0.25: currentFrequency;
+
+      //console.log(currentFrequency);
       ctx.beginPath();
       for(i = sineWave[sectionIndex].x; i <= nextSectionX; i += currentFrequency){
           ctx.moveTo(x,y);
@@ -89,15 +115,16 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           ctx.stroke();
       }
       ctx.closePath();
-      ctx.fillText(light[currentFrequency], (sineWave[sectionIndex].x + nextSectionX)/2, 100);
+      ctx.fillText(light[currentFrequency], (sineWave[sectionIndex].x + nextSectionX)/2, 50);
     }
 });
 
 
 var topcodes = [];
 var c = {}
-var canvasWidth = 600;
-var canvasHeight = 400;
+var canvasWidth = 1200;
+var canvasHeight = 650;
+var xRefactor = 1420/canvasWidth;
 
 
 
