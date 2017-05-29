@@ -17,13 +17,13 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     };
 
     var sun = {
-      16: 'images/radio.png',
-      8: 'images/radio.png',
-      4: 'images/infrared.png',
-      2: 'images/visible.png',
-      1: 'images/UV.png',
-      0.5: 'images/xray.png',
-      0.25: 'images/gamma.png'
+      16: 'radio',
+      8: 'radio',
+      4: 'infrared',
+      2: 'visible',
+      1: 'uv',
+      0.5: 'xray',
+      0.25: 'gamma'
     }
 
     var i;
@@ -86,6 +86,11 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.textAlign="center";
     ctx.fillText(light[currentFrequency],firstSection/2,50);
 
+    //Draw image
+    var img = document.getElementById('img-' + sun[currentFrequency]);
+    console.log(img);
+    ctx.drawImage(img,firstSection/2 - 150,150);
+
     if(sineWave.length > 0){
       console.log(sineWave);
     }
@@ -126,6 +131,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       }
       ctx.closePath();
       ctx.fillText(light[currentFrequency], (sineWave[sectionIndex].x + nextSectionX)/2, 50);
+      img = document.getElementById('img-' + sun[currentFrequency]);
+      ctx.drawImage(img,(sineWave[sectionIndex].x + nextSectionX)/2 - 150,150);
     }
 });
 
