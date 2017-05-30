@@ -77,16 +77,16 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         ctx.closePath();
 
         if(topcodes[i].code == 397 && multiplier >= 0) {
-          ctx.fillText('wavelength up', newX, 310);
+          ctx.fillText('ω ↑', newX, 310);
         }
         else if(topcodes[i].code == 397 && multiplier < 0) {
-          ctx.fillText('wavelength down', newX, 310);
+          ctx.fillText('ω ↓', newX, 310);
         }
         else if(topcodes[i].code == 391 && multiplier >= 0) {
-          ctx.fillText('frequency down', newX, 310);
+          ctx.fillText('f ↓', newX, 310);
         }
         else {
-          ctx.fillText('frequency up', newX, 310);
+          ctx.fillText('f ↑', newX, 310);
         }
       }
     }
