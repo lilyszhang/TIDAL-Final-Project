@@ -26,7 +26,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     var sun = {
       16: 'radio',
-      8: 'radio',
+      8: 'micro',
       4: 'infrared',
       2: 'visible',
       1: 'uv',
@@ -48,10 +48,10 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
         newX = topcodes[i].x * xRefactor;
         multiplier =  Math.round(((topcodes[i].angle + 0.28) * (6/(2*Math.PI)) - 3));
-        multiplier = (topcodes[i].code == 397) ? multiplier : -1 * multiplier; 
+        multiplier = (topcodes[i].code == 397) ? multiplier : -1 * multiplier;
         sineWave.push({
           x: newX,
-          frequencyMultiplier: multiplier  //Wavelength is positive 
+          frequencyMultiplier: multiplier  //Wavelength is positive
         });
 
         //draw line on the screen
@@ -132,20 +132,20 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           ctx.stroke();
       }
       ctx.closePath();
-      
+
       //Write text
       writeText(
         ctx,
-        light[currentFrequency], 
-        (sineWave[sectionIndex].x + nextSectionX)/2, 
+        light[currentFrequency],
+        (sineWave[sectionIndex].x + nextSectionX)/2,
         textHeight
       );
 
       //drawImage
       drawImage(
-        ctx, 
-        'img-' + sun[currentFrequency], 
-        (sineWave[sectionIndex].x + nextSectionX)/2 - imageXShift, 
+        ctx,
+        'img-' + sun[currentFrequency],
+        (sineWave[sectionIndex].x + nextSectionX)/2 - imageXShift,
         imageHeight
       );
     }
