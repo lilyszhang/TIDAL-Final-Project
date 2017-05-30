@@ -6,7 +6,18 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = "black";
 
+    ctx.rect(0,0, canvasWidth, 630);
+    ctx.fill();
+    
+    ctx.strokeStyle = "grey";
+    ctx.font="20px Georgia";
+    ctx.textAlign="center";
+    ctx.fillText('Put Dials in the white space',230,650);
 
+    ctx.strokeStyle = "white";
+    ctx.fillStyle = "white";
+
+    
     //Draw Line across
     ctx.beginPath();
     ctx.moveTo(0, 630);
@@ -15,13 +26,13 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.closePath();
 
     var light = {
-      16: 'radio',
-      8: 'microwave',
-      4: 'infrared',
-      2: 'visible light',
-      1: 'ultraviolet',
-      0.5: 'x-ray',
-      0.25: 'gamma ray'
+      16: 'Radio',
+      8: 'Microwave',
+      4: 'Infrared',
+      2: 'Visible Light',
+      1: 'Ultraviolet',
+      0.5: 'X-ray',
+      0.25: 'Gamma Ray'
     };
 
     var sun = {
@@ -73,7 +84,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     //canvas Drawing Variables
     var textHeight = 50,
         imageY = 100,
-        imageXShift = 50,
+        imageXShift = 150,
         yIntercept = 550,
         waveAmplitude = 40;
 
@@ -163,7 +174,7 @@ var topcodes = [],
     canvasHeight = 750,
     xRefactor = canvasWidth/videoWidth,
     writeText = function (ctx, textValue, textX, textY) {
-      ctx.font="20px Georgia";
+      ctx.font="30px Georgia";
       ctx.textAlign="center";
       ctx.fillText(textValue,textX,textY);
     },
