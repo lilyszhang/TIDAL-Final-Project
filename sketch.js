@@ -6,6 +6,14 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = "black";
 
+
+    //Draw Line across
+    ctx.beginPath();
+    ctx.moveTo(0, 630);
+    ctx.lineTo(canvasWidth, 630);
+    ctx.stroke();
+    ctx.closePath();
+
     var light = {
       16: 'radio',
       8: 'microwave',
@@ -49,7 +57,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         //draw line on the screen
         ctx.beginPath();
         ctx.moveTo(newX, 0);
-        ctx.lineTo(newX, canvasHeight);
+        ctx.lineTo(newX, 620);
         ctx.stroke();
         ctx.closePath();
       }
@@ -64,9 +72,10 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     //canvas Drawing Variables
     var textHeight = 50,
-        imageHeight = 150,
+        imageHeight = 100,
         imageXShift = 150,
-        yIntercept = 550;
+        yIntercept = 550,
+        waveAmplitude = 40;
 
     var currentFrequency = 2;
     //Draw first part of the wave
@@ -78,7 +87,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     for(i = 0; i <= firstSection; i += currentFrequency){
         ctx.moveTo(x,y);
         x = i;
-        y = yIntercept - Math.sin(counter) * 60;
+        y = yIntercept - Math.sin(counter) * waveAmplitude;
         counter += increase;
         ctx.lineTo(x,y);
         ctx.stroke();
@@ -117,7 +126,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       for(i = sineWave[sectionIndex].x; i <= nextSectionX; i += currentFrequency){
           ctx.moveTo(x,y);
           x = i;
-          y = yIntercept - Math.sin(counter) * 60;
+          y = yIntercept - Math.sin(counter) * waveAmplitude;
           counter += increase;
           ctx.lineTo(x,y);
           ctx.stroke();
@@ -150,7 +159,7 @@ var topcodes = [],
     videoWidth = 1200,
     videoHeight = 650,
     canvasWidth = 1420,
-    canvasHeight = 650,
+    canvasHeight = 750,
     xRefactor = canvasWidth/videoWidth,
     writeText = function (ctx, textValue, textX, textY) {
       ctx.font="20px Georgia";
