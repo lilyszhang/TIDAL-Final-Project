@@ -3,7 +3,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     topcodes = json.topcodes;
 
     var ctx = document.querySelector("#lines").getContext('2d');
-    ctx.clearRect(0, 0, 1420, canvasHeight);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = "black";
 
     var light = {
@@ -24,51 +24,55 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       1: 'uv',
       0.5: 'xray',
       0.25: 'gamma'
-    }
+    };
 
-    var i;
-    var sineWave = [];
-    var newX = 0;
+    //Variables for topcode processing
+    var i,
+        sineWave = [],
+        newX = 0,
+        multiplier = 0,
+        code;
     //Put topcodes in system
-    for (i=0; i < topcodes.length; i++) {
-        if(topcodes[i].code == 397) { //Wavelength
-          //console.log(topcodes[i].angle);
-          newX = topcodes[i].x * xRefactor;
-          sineWave.push({
-            x: newX,
-            frequencyMultiplier: Math.round((topcodes[i].angle * (6/(2*Math.PI)) - 3))  //Wavelength
-          });
-          ctx.beginPath();
-          ctx.moveTo(newX, 0);
-          ctx.lineTo(newX, canvasHeight);
-          ctx.stroke();
-          ctx.closePath();
-        } else if (topcodes[i].code == 391) {
-          console.log(topcodes[i].angle);
-          newX = topcodes[i].x * xRefactor;
-          sineWave.push({
-            x:newX,
-            frequencyMultiplier: -1 * Math.round((topcodes[i].angle * (6/(2*Math.PI)) - 3))  //Frequency
-          });
-          ctx.beginPath();
-          ctx.moveTo(newX, 0);
-          ctx.lineTo(newX, canvasHeight);
-          ctx.stroke();
-          ctx.closePath();
-        }
+    for (i = 0; i < topcodes.length; i++) {
+      //397 is wavelength and 391 is frequency
+      if(topcodes[i].code == 397 || topcodes[i].code == 391) {
+        //console.log(topcodes[i].angle);
+
+        newX = topcodes[i].x * xRefactor;
+        multiplier =  Math.round(((topcodes[i].angle + 0.28) * (6/(2*Math.PI)) - 3));
+        multiplier = (topcodes[i].code == 397) ? multiplier : -1 * multiplier; 
+        sineWave.push({
+          x: newX,
+          frequencyMultiplier: multiplier  //Wavelength is positive 
+        });
+
+        //draw line on the screen
+        ctx.beginPath();
+        ctx.moveTo(newX, 0);
+        ctx.lineTo(newX, canvasHeight);
+        ctx.stroke();
+        ctx.closePath();
+      }
     }
 
-    //Draw sineWave waves
+    //Sort detected topcodes by X
     sineWave.sort(function(a,b){
       return a.x - b.x;
     });
 
+
+
+    //canvas Drawing Variables
+    var textHeight = 50,
+        imageHeight = 150,
+        imageXShift = 150,
+        yIntercept = 550;
+
     var currentFrequency = 2;
     //Draw first part of the wave
     var firstSection = (sineWave[0]) ? sineWave[0].x : canvasWidth;
-    var yIntercept = 550;
 
-    var counter = 0, x=0,y = yIntercept;
+    var counter = 0, x = 0,y = yIntercept;
     var increase = 90/180*Math.PI / 9;
     ctx.beginPath();
     for(i = 0; i <= firstSection; i += currentFrequency){
@@ -82,36 +86,25 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.closePath();
 
     //Write the text
-    ctx.font="20px Georgia";
-    ctx.textAlign="center";
-    ctx.fillText(light[currentFrequency],firstSection/2,50);
+    writeText(ctx,light[currentFrequency],firstSection/2,textHeight);
 
     //Draw image
-    var img = document.getElementById('img-' + sun[currentFrequency]);
-    console.log(img);
-    ctx.drawImage(img,firstSection/2 - 150,150);
-
-    if(sineWave.length > 0){
-      console.log(sineWave);
-    }
+    drawImage(ctx,'img-' + sun[currentFrequency], firstSection/2 - imageXShift, imageHeight);
 
     //If more sections exist
     for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
-      nextSectionX = ((sectionIndex + 1) < sineWave.length) ?
+      var nextSectionX = ((sectionIndex + 1) < sineWave.length) ?
         sineWave[sectionIndex + 1].x : canvasWidth;
-      var counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
+      counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
 
       //Transforming the multiplier
       var transformedMultiplier = sineWave[sectionIndex].frequencyMultiplier;
-      console.log('before transformation:' + transformedMultiplier)
       //Greater than 3 then set to 3
       transformedMultiplier = (transformedMultiplier > 3) ? 3 : transformedMultiplier;
       //Greater than -3 then set to -3
       transformedMultiplier = (transformedMultiplier < -3) ? -3 : transformedMultiplier;
       //Equal to 0 than bump to 1
       transformedMultiplier = (transformedMultiplier == 0) ? 1 : transformedMultiplier;
-      console.log('fixed to: ' + transformedMultiplier);
-      console.log('to the power of 2: ' + Math.pow(2, transformedMultiplier));
 
 
       //Set the current Frequency
@@ -130,15 +123,41 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           ctx.stroke();
       }
       ctx.closePath();
-      ctx.fillText(light[currentFrequency], (sineWave[sectionIndex].x + nextSectionX)/2, 50);
-      img = document.getElementById('img-' + sun[currentFrequency]);
-      ctx.drawImage(img,(sineWave[sectionIndex].x + nextSectionX)/2 - 150,150);
+      
+      //Write text
+      writeText(
+        ctx,
+        light[currentFrequency], 
+        (sineWave[sectionIndex].x + nextSectionX)/2, 
+        textHeight
+      );
+
+      //drawImage
+      drawImage(
+        ctx, 
+        'img-' + sun[currentFrequency], 
+        (sineWave[sectionIndex].x + nextSectionX)/2 - imageXShift, 
+        imageHeight
+      );
     }
 });
 
 
-var topcodes = [];
-var c = {}
-var canvasWidth = 1200;
-var canvasHeight = 650;
-var xRefactor = 1420/canvasWidth;
+
+//Global variables
+var topcodes = [],
+    c = {},
+    videoWidth = 1200,
+    videoHeight = 650,
+    canvasWidth = 1420,
+    canvasHeight = 650,
+    xRefactor = canvasWidth/videoWidth,
+    writeText = function (ctx, textValue, textX, textY) {
+      ctx.font="20px Georgia";
+      ctx.textAlign="center";
+      ctx.fillText(textValue,textX,textY);
+    },
+    drawImage = function(ctx,imgID, imageX, imageY){
+      var img = document.getElementById(imgID);
+      ctx.drawImage(img, imageX, imageY);
+    };
