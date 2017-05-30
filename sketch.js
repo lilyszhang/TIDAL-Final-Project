@@ -8,7 +8,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     ctx.rect(0,0, canvasWidth, 630);
     ctx.fill();
-    
+
     ctx.strokeStyle = "grey";
     ctx.font="20px Georgia";
     ctx.textAlign="center";
@@ -17,7 +17,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "white";
 
-    
+
     //Draw Line across
     ctx.beginPath();
     ctx.moveTo(0, 630);
@@ -83,8 +83,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     //canvas Drawing Variables
     var textHeight = 50,
-        imageY = 100,
-        imageXShift = 150,
+        imageY = 80,
+        imageXShift = 75,
         yIntercept = 550,
         waveAmplitude = 40;
 
