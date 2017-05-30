@@ -72,8 +72,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
     //canvas Drawing Variables
     var textHeight = 50,
-        imageHeight = 100,
-        imageXShift = 150,
+        imageY = 100,
+        imageXShift = 50,
         yIntercept = 550,
         waveAmplitude = 40;
 
@@ -97,8 +97,9 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     //Write the text
     writeText(ctx,light[currentFrequency],firstSection/2,textHeight);
 
+
     //Draw image
-    drawImage(ctx,'img-' + sun[currentFrequency], firstSection/2 - imageXShift, imageHeight);
+    drawImage(ctx,'img-' + sun[currentFrequency], firstSection/2 - imageXShift, imageY);
 
     //If more sections exist
     for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
@@ -146,7 +147,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         ctx,
         'img-' + sun[currentFrequency],
         (sineWave[sectionIndex].x + nextSectionX)/2 - imageXShift,
-        imageHeight
+        imageY
       );
     }
 });
