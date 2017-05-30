@@ -50,6 +50,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         sineWave = [],
         newX = 0,
         multiplier = 0,
+        change = 1,
         code;
     //Put topcodes in system
     for (i = 0; i < topcodes.length; i++) {
@@ -60,6 +61,9 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         newX = topcodes[i].x * xRefactor;
         multiplier =  Math.round(((topcodes[i].angle + 0.28) * (6/(2*Math.PI)) - 3));
         multiplier = (topcodes[i].code == 397) ? multiplier : -1 * multiplier;
+        console.log(multiplier);
+        // change = (topcodes[i].code == 397) ? change : -1 * change;
+        // console.log(change)
         sineWave.push({
           x: newX,
           frequencyMultiplier: multiplier  //Wavelength is positive
@@ -71,6 +75,19 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         ctx.lineTo(newX, 620);
         ctx.stroke();
         ctx.closePath();
+
+        if(topcodes[i].code == 397 && multiplier >= 0) {
+          ctx.fillText('wavelength up', newX, 310);
+        }
+        else if(topcodes[i].code == 397 && multiplier < 0) {
+          ctx.fillText('wavelength down', newX, 310);
+        }
+        else if(topcodes[i].code == 391 && multiplier >= 0) {
+          ctx.fillText('frequency down', newX, 310);
+        }
+        else {
+          ctx.fillText('frequency up', newX, 310);
+        }
       }
     }
 
