@@ -59,28 +59,46 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         //console.log(topcodes[i].angle);
 
         newX = topcodes[i].x * xRefactor;
-        multiplier =  Math.round(((topcodes[i].angle + 0.28) * (6/(2*Math.PI)) - 3));
+        multiplier =  Math.floor((topcodes[i].angle + 0.28) * 7/(2*Math.PI)) - 3;
+        if(multiplier > 3){
+          multiplier = 3;
+        } else if (multiplier < -3){
+          multiplier = -3;
+        }
+
         multiplier = (topcodes[i].code == 397) ? multiplier : -1 * multiplier;
         console.log(multiplier);
-        // change = (topcodes[i].code == 397) ? change : -1 * change;
-        // console.log(change)
         sineWave.push({
           x: newX,
           frequencyMultiplier: multiplier,  //Wavelength is positive
           code: topcodes[i].code
         });
 
-        if(topcodes[i].code == 397 && multiplier >= 0) {
-          ctx.fillText('ω ↑', newX, 310);
+        //Number of arrows
+        var arrows = '';
+        for(var j = 0; j < Math.abs(multiplier); j += 1){
+          if(topcodes[i].code == 397) {
+            if(multiplier > 0){
+              arrows += '↑';
+            } else {
+              arrows += '↓';
+            }
+          } else {
+            if(multiplier > 0){
+              arrows += '↓';
+            } else {
+              arrows += '↑';
+            }
+          }
         }
-        else if(topcodes[i].code == 397 && multiplier < 0) {
-          ctx.fillText('ω ↓', newX, 310);
-        }
-        else if(topcodes[i].code == 391 && multiplier >= 0) {
-          ctx.fillText('f ↓', newX, 310);
-        }
-        else {
-          ctx.fillText('f ↑', newX, 310);
+        ctx.font="24px Georgia";
+        ctx.textAlign = "left";
+        if(Math.abs(multiplier) > 0){
+          if(topcodes[i].code == 397){
+            ctx.fillText('ω   ' + arrows, newX - 30, 310);
+          } else { 
+            ctx.fillText('f   ' + arrows, newX - 20, 310);
+          }
         }
       }
     }
@@ -130,19 +148,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
 
 
-
-      //Transforming the multiplier
-      var transformedMultiplier = sineWave[sectionIndex].frequencyMultiplier;
-      //Greater than 3 then set to 3
-      transformedMultiplier = (transformedMultiplier > 3) ? 3 : transformedMultiplier;
-      //Greater than -3 then set to -3
-      transformedMultiplier = (transformedMultiplier < -3) ? -3 : transformedMultiplier;
-      //Equal to 0 than bump to 1
-      transformedMultiplier = (transformedMultiplier == 0) ? 1 : transformedMultiplier;
-
-
       //Set the current Frequency
-      currentFrequency *= Math.pow(2, transformedMultiplier);
+      currentFrequency *= Math.pow(2, sineWave[sectionIndex].frequencyMultiplier);
       currentFrequency = (currentFrequency > 16) ? 16: currentFrequency;
       currentFrequency = (currentFrequency < 0.25) ? 0.25: currentFrequency;
 
