@@ -45,6 +45,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       0.25: 'gamma'
     };
 
+    const resetValue = 9;
+
     //Variables for topcode processing
     var i,
         sineWave = [],
@@ -113,6 +115,13 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
             ctx.fillText('f   ' + arrows, newX - 20, 310);
           }
         }
+      } else if(topcodes[i].code == 597){
+        newX = topcodes[i].x * xRefactor;
+        sineWave.push({
+          x: newX,
+          frequencyMultiplier: resetValue,  //Wavelength is positive
+          code: topcodes[i].code
+        });
       }
     }
 
@@ -162,9 +171,13 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
 
       //Set the current Frequency
-      currentFrequency *= Math.pow(2, sineWave[sectionIndex].frequencyMultiplier);
-      currentFrequency = (currentFrequency > 16) ? 16: currentFrequency;
-      currentFrequency = (currentFrequency < 0.25) ? 0.25: currentFrequency;
+      if(sineWave[sectionIndex].frequencyMultiplier == resetValue){
+        currentFrequency = 2;
+      } else {
+        currentFrequency *= Math.pow(2, sineWave[sectionIndex].frequencyMultiplier);
+        currentFrequency = (currentFrequency > 16) ? 16: currentFrequency;
+        currentFrequency = (currentFrequency < 0.25) ? 0.25: currentFrequency;
+      }
       //console.log(currentFrequency);
 
       //console.log(currentFrequency);
