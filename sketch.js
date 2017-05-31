@@ -66,15 +66,9 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         // console.log(change)
         sineWave.push({
           x: newX,
-          frequencyMultiplier: multiplier  //Wavelength is positive
+          frequencyMultiplier: multiplier,  //Wavelength is positive
+          code: topcodes[i].code
         });
-
-        //draw line on the screen
-        ctx.beginPath();
-        ctx.moveTo(newX, 0);
-        ctx.lineTo(newX, 620);
-        ctx.stroke();
-        ctx.closePath();
 
         if(topcodes[i].code == 397 && multiplier >= 0) {
           ctx.fillText('ω ↑', newX, 310);
@@ -135,6 +129,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         sineWave[sectionIndex + 1].x : canvasWidth;
       counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
 
+
+
       //Transforming the multiplier
       var transformedMultiplier = sineWave[sectionIndex].frequencyMultiplier;
       //Greater than 3 then set to 3
@@ -177,6 +173,27 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         (sineWave[sectionIndex].x + nextSectionX)/2 - imageXShift,
         imageY
       );
+    }
+
+    //Draw lines here
+    for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
+      if(sineWave[sectionIndex].code == 397){
+       ctx.strokeStyle = "#f1c40f";
+      } else if(sineWave[sectionIndex].code == 391) {
+        ctx.strokeStyle = "#8e44ad";
+      }
+
+      ctx.lineWidth=10;
+      ctx.beginPath();
+      ctx.moveTo(sineWave[sectionIndex].x, 0);
+      ctx.lineTo(sineWave[sectionIndex].x, 620);
+      ctx.stroke();
+      ctx.closePath();
+
+      //Reset Colors
+      ctx.strokeStyle = "white";
+      ctx.lineWidth=1;
+
     }
 });
 
