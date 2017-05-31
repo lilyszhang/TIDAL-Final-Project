@@ -25,7 +25,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
     ctx.stroke();
     ctx.closePath();
 
-    var light = {
+    const light = {
       16: 'Radio',
       8: 'Microwave',
       4: 'Infrared',
@@ -35,7 +35,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       0.25: 'Gamma Ray'
     };
 
-    var sun = {
+    const sun = {
       16: 'radio',
       8: 'micro',
       4: 'infrared',
@@ -44,6 +44,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
       0.5: 'xray',
       0.25: 'gamma'
     };
+
+    const resetValue = 9;
 
     //Variables for topcode processing
     var i,
@@ -59,35 +61,67 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         //console.log(topcodes[i].angle);
 
         newX = topcodes[i].x * xRefactor;
-        multiplier =  Math.round(((topcodes[i].angle + 0.28) * (6/(2*Math.PI)) - 3));
+        multiplier =  Math.floor((topcodes[i].angle + 0.28) * 7/(2*Math.PI)) - 3;
+
+        if(multiplier >= 3){
+          multiplier = 3;
+        } else if (multiplier <= -3){
+          multiplier = -3;
+        }
+
         multiplier = (topcodes[i].code == 397) ? multiplier : -1 * multiplier;
-        console.log(multiplier);
-        // change = (topcodes[i].code == 397) ? change : -1 * change;
-        // console.log(change)
+
+        //Prevent Rollover
+        if(topcodes[i].code in previousState){
+          if(previousState[topcodes[i].code] === -3 && multiplier >= 2){
+            multiplier = -3;
+          } else if(previousState[topcodes[i].code] === 3 && multiplier <= -2){
+            multiplier = 3;
+          }
+        }
+        
         sineWave.push({
           x: newX,
-          frequencyMultiplier: multiplier  //Wavelength is positive
+          frequencyMultiplier: multiplier,  //Wavelength is positive
+          code: topcodes[i].code
         });
 
-        //draw line on the screen
-        ctx.beginPath();
-        ctx.moveTo(newX, 0);
-        ctx.lineTo(newX, 620);
-        ctx.stroke();
-        ctx.closePath();
+        previousState[topcodes[i].code] = multiplier;
+        //console.log(previousState);
 
-        if(topcodes[i].code == 397 && multiplier >= 0) {
-          ctx.fillText('ω ↑', newX, 310);
+        //Number of arrows
+        var arrows = '';
+        for(var j = 0; j < Math.abs(multiplier); j += 1){
+          if(topcodes[i].code == 397) {
+            if(multiplier > 0){
+              arrows += '↑';
+            } else {
+              arrows += '↓';
+            }
+          } else {
+            if(multiplier > 0){
+              arrows += '↓';
+            } else {
+              arrows += '↑';
+            }
+          }
         }
-        else if(topcodes[i].code == 397 && multiplier < 0) {
-          ctx.fillText('ω ↓', newX, 310);
+        ctx.font="24px Georgia";
+        ctx.textAlign = "left";
+        if(Math.abs(multiplier) > 0){
+          if(topcodes[i].code == 397){
+            ctx.fillText('ω   ' + arrows, newX - 30, 310);
+          } else { 
+            ctx.fillText('f   ' + arrows, newX - 20, 310);
+          }
         }
-        else if(topcodes[i].code == 391 && multiplier >= 0) {
-          ctx.fillText('f ↓', newX, 310);
-        }
-        else {
-          ctx.fillText('f ↑', newX, 310);
-        }
+      } else if(topcodes[i].code == 597){
+        newX = topcodes[i].x * xRefactor;
+        sineWave.push({
+          x: newX,
+          frequencyMultiplier: resetValue,  //Wavelength is positive
+          code: topcodes[i].code
+        });
       }
     }
 
@@ -99,11 +133,11 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 
 
     //canvas Drawing Variables
-    var textHeight = 50,
-        imageY = 80,
-        imageXShift = 75,
-        yIntercept = 550,
-        waveAmplitude = 40;
+    const textHeight = 50,
+          imageY = 80,
+          imageXShift = 75,
+          yIntercept = 550,
+          waveAmplitude = 40;
 
     var currentFrequency = 2;
     //Draw first part of the wave
@@ -118,8 +152,8 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         y = yIntercept - Math.sin(counter) * waveAmplitude;
         counter += increase;
         ctx.lineTo(x,y);
-        ctx.stroke();
     }
+    ctx.stroke();
     ctx.closePath();
 
     //Write the text
@@ -135,20 +169,16 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         sineWave[sectionIndex + 1].x : canvasWidth;
       counter = 0, x = sineWave[sectionIndex].x,y = yIntercept;
 
-      //Transforming the multiplier
-      var transformedMultiplier = sineWave[sectionIndex].frequencyMultiplier;
-      //Greater than 3 then set to 3
-      transformedMultiplier = (transformedMultiplier > 3) ? 3 : transformedMultiplier;
-      //Greater than -3 then set to -3
-      transformedMultiplier = (transformedMultiplier < -3) ? -3 : transformedMultiplier;
-      //Equal to 0 than bump to 1
-      transformedMultiplier = (transformedMultiplier == 0) ? 1 : transformedMultiplier;
-
 
       //Set the current Frequency
-      currentFrequency *= Math.pow(2, transformedMultiplier);
-      currentFrequency = (currentFrequency > 16) ? 16: currentFrequency;
-      currentFrequency = (currentFrequency < 0.25) ? 0.25: currentFrequency;
+      if(sineWave[sectionIndex].frequencyMultiplier == resetValue){
+        currentFrequency = 2;
+      } else {
+        currentFrequency *= Math.pow(2, sineWave[sectionIndex].frequencyMultiplier);
+        currentFrequency = (currentFrequency > 16) ? 16: currentFrequency;
+        currentFrequency = (currentFrequency < 0.25) ? 0.25: currentFrequency;
+      }
+      //console.log(currentFrequency);
 
       //console.log(currentFrequency);
       ctx.beginPath();
@@ -158,8 +188,9 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
           y = yIntercept - Math.sin(counter) * waveAmplitude;
           counter += increase;
           ctx.lineTo(x,y);
-          ctx.stroke();
+          
       }
+      ctx.stroke();
       ctx.closePath();
 
       //Write text
@@ -178,6 +209,27 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
         imageY
       );
     }
+
+    //Draw lines here
+    for(var sectionIndex = 0; sectionIndex < sineWave.length; sectionIndex += 1){
+      if(sineWave[sectionIndex].code == 397){
+       ctx.strokeStyle = "#f1c40f";
+      } else if(sineWave[sectionIndex].code == 391) {
+        ctx.strokeStyle = "#8e44ad";
+      }
+
+      ctx.lineWidth=10;
+      ctx.beginPath();
+      ctx.moveTo(sineWave[sectionIndex].x, 0);
+      ctx.lineTo(sineWave[sectionIndex].x, 620);
+      ctx.stroke();
+      ctx.closePath();
+
+      //Reset Colors
+      ctx.strokeStyle = "white";
+      ctx.lineWidth=1;
+
+    }
 });
 
 
@@ -185,11 +237,7 @@ TopCodes.setVideoFrameCallback("video-canvas", function(jsonString) {
 //Global variables
 var topcodes = [],
     c = {},
-    videoWidth = 1200,
-    videoHeight = 650,
-    canvasWidth = 1420,
-    canvasHeight = 750,
-    xRefactor = canvasWidth/videoWidth,
+    previousState = {},
     writeText = function (ctx, textValue, textX, textY) {
       ctx.font="30px Georgia";
       ctx.textAlign="center";
@@ -199,3 +247,8 @@ var topcodes = [],
       var img = document.getElementById(imgID);
       ctx.drawImage(img, imageX, imageY);
     };
+const videoWidth = 1200,
+      videoHeight = 650,
+      canvasWidth = 1420,
+      canvasHeight = 750,
+      xRefactor = canvasWidth/videoWidth;
